@@ -1,5 +1,7 @@
 #----------------------------------------------------------------------------#
 # Imports
+
+from uroki.uroki import uroki
 #----------------------------------------------------------------------------#
 
 from flask import *
@@ -10,32 +12,30 @@ from logging import Formatter, FileHandler
 from forms import *
 import os
 
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
-
 app = Flask(__name__)
 app.config.from_object('config')
 db.init_app(app)
 
-#----------------------------------------------------------------------------#
-# Blueprints.
-#----------------------------------------------------------------------------#
-
-# from __ import __
-# app.register_blueprint(__)
 
 #----------------------------------------------------------------------------#
-# Flask_Admin.
+# App Config.
 #----------------------------------------------------------------------------#
 
-panel = Admin(
-    app,
-    name='Admin Control Panel',
-    template_mode='bootstrap3',
-)
-panel.add_link(MenuLink(name='Logout', category='', url='/logout'))
-panel.add_view(DefaultModelView(User, db.session, column_searchable_list=['username', 'email']))
+
+
+app.register_blueprint(uroki, url_prefix='/uroki')
+
+
+
+
+
+# panel = Admin(
+#     app,
+#     name='Admin Control Panel',
+#     template_mode='bootstrap3',
+# )
+# panel.add_link(MenuLink(name='Logout', category='', url='/logout'))
+# panel.add_view(DefaultModelView(User, db.session, column_searchable_list=['username', 'email']))
 
 #----------------------------------------------------------------------------#
 # Login.
@@ -47,27 +47,35 @@ login_manager.init_app(app)
 class LoginUser(UserMixin):
     @property
     def is_admin(self):
-        return self.is_authenticated and self.id == 'admin' 
+        return self.is_authenticated and self.id == 'admin'
         # TODO: YOU NEED TO IMPLEMENT THIS!! A SUGGESTION IS ADDING A "ROLE" COLUMN TO THE USER DATABSE
 
 
+# @login_manager.user_loader
+# def user_loader(username):
+#     if User.query.filter_by(username=username).first() is None:
+#         return
+#     user = LoginUser()
+#     user.id = username
+#     return user
 @login_manager.user_loader
 def user_loader(username):
-    if User.query.filter_by(username=username).first() is None:
-        return
-    user = LoginUser()
-    user.id = username
-    return user
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return None
 
-#----------------------------------------------------------------------------#
-# Controllers.
-#    I suggest you create Blueprints for your routes to keep them tidy (up there),
-#    but I won't to that here.
+    login_user = LoginUser()
+    login_user.id = user.id  # Отримуємо ID користувача з об'єкта User
+    login_user.username = user.username
+    # Додайте інші поля користувача, які вам потрібні
+
+    return login_user
 #----------------------------------------------------------------------------#
 
 @app.route('/')
 def home():
     return render_template('pages/placeholder.home.html')
+
 
 
 @app.route('/about')
@@ -110,14 +118,17 @@ def login():
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
+
         user = User(form.username.data, form.email.data, form.password.data)
+        print(user)
         db.session.add(user)
+        db.session.commit()
         try:
             db.session.commit()
         except:
             flash('Error: User already exists.')
             return redirect(url_for('register'))
-        flash('You are now registered and can log in!', 'success')
+        flash('Тепер ви зареєстровані та можете увійти!', 'success')
         return redirect(url_for('login'))
     return render_template('forms/register.html', form=form)
 
@@ -125,7 +136,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash("You've successfully logged out.", 'success')
+    flash("Ви успішно вийшли."," 'success'")
     return redirect(url_for('home'))
 
 # Error handlers ------------------------------------------------------------#
@@ -156,10 +167,3 @@ if not app.debug:
 # Default port:
 if __name__ == '__main__':
     app.run()
-
-# Or specify port manually:
-'''
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-'''
