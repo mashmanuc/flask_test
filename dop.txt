@@ -1,0 +1,6 @@
+get_id
+id
+is_active
+is_admin
+is_anonymous
+is_authenticated
