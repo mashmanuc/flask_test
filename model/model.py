@@ -165,7 +165,38 @@ def find_test_to_slovo(slovo):
 
 def mass_ans(id):
     """Перетворює відповіді з бази даних у список"""
-    return [item.ans_data.replace("\n","").split('!') for item in find_temi_by_test(id)]
+    return [item.ans_data.replace("\n","").replace('\r', '').replace('\xa0', '').split('!')for item in find_temi_by_test(id)]
+def tes_ans(id_):
+    """Перетворює відповіді з бази даних у список"""
+    try:
+        with Session() as session:
+            test = session.query(Test).filter_by(id=id_).first()
+            return test.ans_data.replace("\n","").replace('\r', '').replace('\xa0', '').split('!')
+    except Exception as e:
+        print(f"Помилка пошуку тем за предметом: {e}")
+        return []
+
+def find_test(id_):
+    try:
+        with Session() as session:
+            test = session.query(Test).filter_by(id=id_).first()
+            return test
+    except Exception as e:
+        print(f"Помилка пошуку тем за предметом: {e}")
+        return []
+
+
+# Припустимо, що у вас вже є екземпляр вашої сесії (session) і модель (Base).
+
+def first_tema_test( tema_test_id):
+    # Використовуйте вашу сесію і запит ORM для пошуку першого тесту з відповідним Tema_test_id.
+    with Session() as session:
+        first_test = session.query(Test).filter_by(tema_test_id=tema_test_id).first()
+    return first_test
+
+
+
+
 
 
 

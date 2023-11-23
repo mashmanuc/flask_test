@@ -1,0 +1,15 @@
+{% extends 'base_ur.html' %}
+
+{% block title %}
+   Тести
+{% endblock %}
+
+{% block body %}
+    <main role="main">
+
+        <a class="btn btn-dark" href="{{ url_for('uroki.page_test', tema_test_id=temma.id ) }}"><h2>{{ temma.test_name }}</h2></a>
+
+    </main>
+
+
+{% endblock %}

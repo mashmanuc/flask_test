@@ -11,7 +11,6 @@ db = SQLAlchemy()
 
 # DEFINE YOUR MODELS HERE
 
-
 app = Flask(__name__)
 app.config.from_object('config')
 db.init_app(app)
@@ -68,9 +67,49 @@ class User_test(db.Model):
             self.test_id = test_id
             self.vid = vid
             self.pr_vid  = pr_vid
+# def add_user_test(users_id, tema_test_id, test_id, vid, pr_vid):
+#     new_user_test = User_test(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
+#     db.session.add(new_user_test)
+#     db.session.commit()
 def add_user_test(users_id, tema_test_id, test_id, vid, pr_vid):
-    new_user_test = User_test(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
-    db.session.add(new_user_test)
+    # Перевірка, чи існує вже запис для користувача і номера тесту
+    existing_record = User_test.query.filter_by(users_id=users_id, test_id=test_id).first()
+
+    if existing_record:
+        # Якщо запис існує, змінюємо його значення
+        existing_record.vid = vid
+        existing_record.pr_vid = pr_vid
+    else:
+        # Якщо запису немає, додаємо новий запис
+        new_user_test = User_test(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
+        db.session.add(new_user_test)
+
+    # Зберігаємо зміни в базі даних
     db.session.commit()
+def user_test(users_id, tema_test_id):
+    # Перевірка, чи існує вже запис для користувача і номера тесту
+    record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
+
+    if record:
+       return [ (m.test_id , m.vid) for m in record  ]
+
+def user_t_ans(users_id, tema_test_id):
+    # Перевірка, чи існує вже запис для користувача і номера тесту
+    record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
+
+    if record:
+       return [ (m.test_id , m.vid) for m in record  ]
+
+def find_vid(users_id, tema_test_id, test_id):
+    # Використовуйте метод query вашого ORM для пошуку відповідного запису в базі даних.
+    user_test_record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id).first()
+
+    # Перевірте, чи знайдено відповідний запис.
+    if user_test_record:
+        return user_test_record.vid
+    else:
+        return None  # Або ви можете повернути яке-небудь значення за замовчуванням або порожній рядок.
+
+
 with app.app_context():
     db.create_all()
