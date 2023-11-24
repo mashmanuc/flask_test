@@ -2,6 +2,7 @@
 # Imports
 
 from uroki.uroki import uroki
+from admin.admin import admin
 #----------------------------------------------------------------------------#
 
 from flask import *
@@ -24,6 +25,7 @@ db.init_app(app)
 
 
 app.register_blueprint(uroki, url_prefix='/uroki')
+app.register_blueprint(admin, url_prefix='/admin')
 
 
 
@@ -96,7 +98,7 @@ def profile():
         Hello, {}
         <br>
         <a href="/logout">Logout</a>
-    """.format(current_user.id)
+    """.format(current_user.username)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -64,9 +64,10 @@ def save_test(tema_test_id,test_id,an):
     tema_test_id=1
     temma=find_Tema_test_by_id(tema_test_id)
     data=find_temi_by_test(tema_test_id)
+    num_quest=int(data[test_id-1].num_quest.split()[-1])
 
     pr_vid=data[test_id-1].vidpov
-    add_user_test(users_id, tema_test_id, test_id, an, pr_vid)
+    add_user_test(users_id, num_quest, tema_test_id, test_id, an, pr_vid)
     tata=user_test(users_id, tema_test_id)
 
     for i,j in tata:
@@ -78,10 +79,11 @@ def save_test(tema_test_id,test_id,an):
 """************************Test**************************"""
 @uroki.route('/urok_test/')
 def urok_test():
-    users_id=current_user.id
-    tema_test_id=1
-    temma=find_Tema_test_by_id(tema_test_id)
-    return render_template('page_test/urok_test.html', temma=temma)
+    if current_user.is_authenticated:
+        tema_test_id=1
+        temma=find_Tema_test_by_id(tema_test_id)
+        return render_template('page_test/urok_test.html', temma=temma)
+    else: return redirect((url_for('login')))
 
 
 @uroki.route('/page_test/<int:tema_test_id>/')
@@ -94,8 +96,10 @@ def page_test(tema_test_id):
     print(test.id)
     tata=find_vid(users_id, tema_test_id, test.id)
     max_question_id=len(find_temi_by_test(tema_test_id))
+    # dinamic=user_test(users_id, tema_test_id)
+    dinamics=dinamic(users_id, tema_test_id)
 
-    return render_template('page_test/page_test.html',test=test,m_ans=m_ans , temma=temma,max_question_id=max_question_id)
+    return render_template('page_test/page_test.html',dinamics=dinamics,test=test,m_ans=m_ans , temma=temma,max_question_id=max_question_id)
 from flask import request
 
 
@@ -105,17 +109,22 @@ def show_question(tema_test_id,test_id,an):
     test = find_test(test_id)
     users_id=current_user.id
     temma = find_Tema_test_by_id(tema_test_id)
+    print(test.vidpov)
     pr_vid=test.vidpov
-    add_user_test(users_id, tema_test_id, test_id, an, pr_vid)
+    num_quest =test.num_quest
+
+    add_user_test(users_id,num_quest , tema_test_id, test_id, an, pr_vid)
     tata=find_vid(users_id, tema_test_id, test.id)
     m_ans = tes_ans(test_id)
     print(tata)
     print(m_ans)
+    # dinamic=user_test(users_id, tema_test_id)
+    dinamics=dinamic(users_id, tema_test_id)
 
     # Assuming max_question_id is the maximum ID of questions
     max_question_id = len(find_temi_by_test(tema_test_id))
 
-    return render_template('page_test/page_test.html',tata=tata, test=test, m_ans=m_ans, temma=temma, max_question_id=max_question_id)
+    return render_template('page_test/page_test.html',dinamics=dinamics,tata=tata, test=test, m_ans=m_ans, temma=temma, max_question_id=max_question_id)
 
 @uroki.route('/show_next_quest/<int:tema_test_id>/<int:test_id>')
 def show_next_quest(tema_test_id,test_id):
@@ -125,6 +134,8 @@ def show_next_quest(tema_test_id,test_id):
     tata=find_vid(users_id, tema_test_id, test.id)
     m_ans=tes_ans(test_id+1)
     max_question_id=len(find_temi_by_test(tema_test_id))
+    # dinamic=user_test(users_id, tema_test_id)
+    dinamics=dinamic(users_id, tema_test_id)
 
 
-    return render_template('page_test/page_test.html',test=test, tata=tata, m_ans=m_ans , temma=temma,max_question_id=max_question_id)
+    return render_template('page_test/page_test.html',dinamics=dinamics, test=test, tata=tata, m_ans=m_ans , temma=temma,max_question_id=max_question_id)

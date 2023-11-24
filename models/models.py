@@ -52,6 +52,7 @@ class User(db.Model, UserMixin):
 # ---------------------------------------------------------------------------- #
 class User_test(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    num_quest=db.Column(db.Integer, nullable=False)
     users_id = db.Column(db.Integer, nullable=False)
     tema_test_id =  db.Column(db.Integer, nullable=False)
     test_id = db.Column(db.Integer, nullable=False)
@@ -61,8 +62,9 @@ class User_test(db.Model):
 
 
 
-    def __init__(self, users_id,tema_test_id, test_id,  vid,  pr_vid  ):
+    def __init__(self, users_id,num_quest,tema_test_id, test_id,  vid,  pr_vid  ):
             self.users_id = users_id
+            self.num_quest=num_quest
             self.tema_test_id  = tema_test_id
             self.test_id = test_id
             self.vid = vid
@@ -71,7 +73,7 @@ class User_test(db.Model):
 #     new_user_test = User_test(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
 #     db.session.add(new_user_test)
 #     db.session.commit()
-def add_user_test(users_id, tema_test_id, test_id, vid, pr_vid):
+def add_user_test(users_id,num_quest, tema_test_id, test_id, vid, pr_vid):
     # Перевірка, чи існує вже запис для користувача і номера тесту
     existing_record = User_test.query.filter_by(users_id=users_id, test_id=test_id).first()
 
@@ -81,7 +83,7 @@ def add_user_test(users_id, tema_test_id, test_id, vid, pr_vid):
         existing_record.pr_vid = pr_vid
     else:
         # Якщо запису немає, додаємо новий запис
-        new_user_test = User_test(users_id=users_id, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
+        new_user_test = User_test(users_id=users_id,num_quest=num_quest, tema_test_id=tema_test_id, test_id=test_id, vid=vid, pr_vid=pr_vid)
         db.session.add(new_user_test)
 
     # Зберігаємо зміни в базі даних
@@ -91,14 +93,20 @@ def user_test(users_id, tema_test_id):
     record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
 
     if record:
-       return [ (m.test_id , m.vid) for m in record  ]
+       return [ (m.test_id , m.vid, (m.num_quest.split()[-1]) ) for m in record  ]
+def dinamic(users_id, tema_test_id):
+    record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
 
+    if record:
+       return [ int(m.num_quest.split()[-1])  for m in record  ]
+
+    pass
 def user_t_ans(users_id, tema_test_id):
     # Перевірка, чи існує вже запис для користувача і номера тесту
     record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
 
     if record:
-       return [ (m.test_id , m.vid) for m in record  ]
+       return [ (m.test_id, m.vid) for m in record  ]
 
 def find_vid(users_id, tema_test_id, test_id):
     # Використовуйте метод query вашого ORM для пошуку відповідного запису в базі даних.

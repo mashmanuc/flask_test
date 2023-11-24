@@ -8,11 +8,28 @@
 <main role="main">
     <h2 style="margin-bottom: 100px;">{{temma.test_name}}</h2>
     <h2>{{ test.num_quest }}</h2>
-    <p></p>
 
 
+<div class="card mb-4 shadow-sm">
+    {% if dinamics%}
 
+        <div class="btn-group" role="group" aria-label="Test Navigation">
+            {% for din in range(1,max_question_id+1) %}
 
+                {% if din in dinamics %}
+                    <button type="button" class="btn btn-sm btn-other-style">
+                        <a class="btn btn-dark"  href="{{ url_for('uroki.show_next_quest', tema_test_id=temma.id, test_id=loop.index-1) }}">{{ loop.index }}</a>
+                    </button>
+                {% else %}
+                    <button type="button" class="btn btn-sm btn-other-style">
+                        <a class="btn btn-light" href="{{ url_for('uroki.show_next_quest', tema_test_id=temma.id, test_id=loop.index-1) }}">{{ loop.index }}</a>
+                    </button>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
 
 
 
