@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block body %}
+{% for tem in temma %}
     <main role="main">
 
-        <a class="btn btn-dark" href="{{ url_for('uroki.page_test', tema_test_id=temma.id ) }}"><h2>{{ temma.test_name }}</h2></a>
+        <a class="btn btn-dark" href="{{ url_for('uroki.page_test', tema_test_id=tem.id ) }}"><h2>{{ tem.test_name }}</h2></a>
 
     </main>
 
-
+{% endfor %}
 {% endblock %}

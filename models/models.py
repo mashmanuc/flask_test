@@ -98,9 +98,9 @@ def dinamic(users_id, tema_test_id):
     record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
 
     if record:
-       return [ int(m.num_quest.split()[-1])  for m in record  ]
+       return [ m.test_id  for m in record  ]
 
-    pass
+
 def user_t_ans(users_id, tema_test_id):
     # Перевірка, чи існує вже запис для користувача і номера тесту
     record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()

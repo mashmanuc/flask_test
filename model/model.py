@@ -2,10 +2,11 @@ from sqlalchemy import Column, Integer, String,  ForeignKey,Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 # import sqlalchemy
+
 from sqlalchemy import create_engine
 Base = declarative_base()
 
-
+SQLALCHEMY_DATABASE_URI = "sqlite:///E:/project/my_flask/basaSS.db"
 
 class Predmet(Base):
     __tablename__ = 'predmet'
@@ -40,6 +41,11 @@ class Test(Base):
     tema_test_id = Column(Integer, ForeignKey('tema_test.id'))
     tema_test = relationship("Tema_test", back_populates="test_list")
 
+class Temy_site(Base):
+    __tablename__ = 'tema_site'
+    id = Column(Integer, primary_key=True)
+    tema_test_id=Column(Integer)
+
 
 
 
@@ -47,7 +53,7 @@ class Test(Base):
 
 
 # engine = sqlalchemy.create_engine('mysql+mysqlconnector://mash:123mMm321@mash.mysql.database.azure.com:3306/prosto')
-engine = create_engine("sqlite:///E:/project/flask51/flask/basaSS.db")
+engine = create_engine(SQLALCHEMY_DATABASE_URI )
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
@@ -78,6 +84,27 @@ def add_Tema_test(test_name, claass_id ):
     except Exception as e:
         print(f"Помилка додавання теми: {e}")
 """************************************************************************"""
+def add_temy_site(id_):
+    try:
+        with Session() as session:
+            new_temy = Temy_site(tema_test_id=id_)
+            session.add(new_temy )
+            session.commit()
+    except Exception as e:
+        print(f"Помилка додавання предмету: {e}")
+def find_temy_site():
+    mass=[]
+    with Session() as session:
+        t_site = session.query(Temy_site).all()
+    for i in t_site:
+        obj=find_Tema_test_by_id(i.tema_test_id)
+        mass.append(obj)
+
+    return mass
+
+
+
+
 # add_Tema_test(test_name="все", claass_id =1 )
 def ob1_ob2(classs=Predmet,id=1):
     with Session() as session:
@@ -343,6 +370,15 @@ def find_last_test():
         with Session() as session:
             test = session.query(Test).order_by(Test.num_quest.desc()).first()
             return test
+    except Exception as e:
+        print(f"Помилка пошуку останнього тесту: {e}")
+        return None
+def min_max_test_id(tema_test_id):
+    try:
+        with Session() as session:
+              record=find_temi_by_test(tema_test_id)
+        if record:
+            return [ (m.id) for m in record  ]
     except Exception as e:
         print(f"Помилка пошуку останнього тесту: {e}")
         return None

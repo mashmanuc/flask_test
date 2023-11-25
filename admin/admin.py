@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, url_for, redirect, request, flash
 # SQLALCHEMY_DATABASE_URI ='mysql+mysqlconnector://mash:123mMm321@mash.mysql.database.azure.com:3306/prosto'
 from admin.forms import TestForm
-
-from admin.model_ad import *
+from model import *
+# from admin.model_ad import *
 from admin.func_ad import paginate_query
 title='Goooooo'
 admin = Blueprint('admin', __name__, template_folder='templates')
@@ -49,8 +49,20 @@ def testes_ad(id):
 
     m_ans=mass_ans(id)
     return render_template('testes_ad.html',data=data, m_ans= m_ans, temma=temma)
+@admin.route('/add_temy_site/<int:id>')
+def add_temy_site(id):
+    if request.method == 'GET':
+        try:
+            with Session() as session:
+                new_temy = Temy_site(tema_test_id=id)
+                session.add(new_temy)
+                session.commit()
+                return redirect(url_for('admin.tema_test_ad', id=id))
+        except Exception as e:
+            print(f"Помилка додавання предмету: {e}")
 
-
+    elif request.method == 'GET':
+        return redirect(url_for('admin.tema_test_ad'))
 
 
 @admin.route('/admin/dell_test_tema_ad/<int:id>', methods=['GET', 'POST'])
@@ -75,7 +87,7 @@ def edit_test(test_id):
     if request.method == 'POST' and form.validate_on_submit():
         form.populate_obj(test)
         update_test(test.id, test.num_quest, test.quest_img, test.quest_text, test.ans_data, test.vidpov)
-        return redirect(url_for('admin.tema_test_ad', id=test.tema_test_id))
+        return redirect(url_for('admin.testes_ad', id=test.tema_test_id))
     else:
     # Відобразити помилки валідації, якщо такі є
         for field, errors in form.errors.items():
