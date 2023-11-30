@@ -94,6 +94,11 @@ def user_test(users_id, tema_test_id):
 
     if record:
        return [ (m.test_id , m.vid, (m.num_quest.split()[-1]) ) for m in record  ]
+
+def user_res_test(users_id, tema_test_id):
+    user_test_results = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).order_by(User_test.test_id.asc()).all()
+    return user_test_results
+
 def dinamic(users_id, tema_test_id):
     record = User_test.query.filter_by(users_id=users_id, tema_test_id=tema_test_id).all()
 
@@ -118,6 +123,38 @@ def find_vid(users_id, tema_test_id, test_id):
     else:
         return None  # Або ви можете повернути яке-небудь значення за замовчуванням або порожній рядок.
 
+# def vidsotok(users_id, tema_test_id):
+#     ress = user_res_test(users_id, tema_test_id)
+#     summa = 0
+#     for res in ress:
+#         if res.pr_vid.strip() == res.vid.strip():
+#             summa += 1
+#     vid = round((summa / len(ress)) * 100)
+#     return vid
+def vidsotok(users_id, tema_test_id):
+    ress = user_res_test(users_id, tema_test_id)
+    summa = 0
+    for res in ress:
+        print(res.vid)
+        print(res.pr_vid)
+        # Вирівнюємо рядки за довжиною
+        len_diff = len(res.vid) - len(res.pr_vid)
+        if len_diff > 0:
+            res.pr_vid = res.pr_vid.ljust(len(res.vid), ' ')
+        elif len_diff < 0:
+            res.vid = res.vid.ljust(len(res.pr_vid), ' ')
+
+        # Додатковий вивід для аналізу
+        print(f"Length vid: {len(res.vid)}, Length pr_vid: {len(res.pr_vid)}")
+        print(f"Чи дорівнює vid pr_vid? {res.pr_vid.lower() == res.vid.lower()}")
+
+        if res.pr_vid.lower() == res.vid.lower():
+            print(summa)
+            summa += 1
+    print(summa)
+
+    vid = round((summa / len(ress)) * 100)
+    return vid
 
 with app.app_context():
     db.create_all()

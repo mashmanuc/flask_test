@@ -1,16 +1,18 @@
-{% extends 'base_ur.html' %}
+{% extends 'layouts/main.html' %}
 
 {% block title %}
    Тести
 {% endblock %}
 
-{% block body %}
+{% block content %}
+<ul class="nav flex-column mb-2">
 {% for tem in temma %}
     <main role="main">
 
-        <a class="btn btn-dark" href="{{ url_for('uroki.page_test', tema_test_id=tem.id ) }}"><h2>{{ tem.test_name }}</h2></a>
+       <li> <a class="btn btn-dark" href="{{ url_for('uroki.page_test', tema_test_id=tem.id ) }}"><h2>{{ tem.test_name }}</h2></a></li>
+       <p></p>
 
     </main>
 
-{% endfor %}
+{% endfor %}</ul>
 {% endblock %}
