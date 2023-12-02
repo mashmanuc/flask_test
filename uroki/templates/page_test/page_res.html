@@ -27,7 +27,8 @@
                     {% endif %}
                           <button type="button" class="btn btn-sm btn-other-style">
                             <a class="btn btn-light" href="#">{{res.vid}}</a>
-                        </button>{{res.pr_vid}}
+                        </button>
+                        {#  {{res.pr_vid}} #}
 
             </div>
             {% endfor %}
@@ -46,7 +47,7 @@
     </div>
     <div class="card mb-4 shadow-sm">
         <div class="card-text">
-            <h4>Кількість балів</h4>
+            <h4>Ви набрали {{ ((vids * 12 / 100) | float | round| int )}}       з 12  балів </h4>
         </div>
 
            {% endblock %}
